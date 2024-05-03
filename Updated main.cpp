@@ -1,15 +1,67 @@
 #include <iostream>
+#include<fstream>
 #include <string>
+#include<limits>    //for cin.ignore
 #include<windows.h>
 #include<conio.h>
 #include<cstdlib>
+#include<sstream>
 
 using namespace std;
+
+
+void buffer()
+{
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  
+}
+void screen(int n,string a)
+{
+	Sleep(n*1000);
+	system("cls");
+	system("COLOR 0e"); // Set background to black and text to yellow
+    system("cls");      // Clear the console screen
+
+    // Set output code page to 437 (for ASCII art)
+    SetConsoleCP(437);
+    SetConsoleOutputCP(437);
+
+    char spinner[] = {'|', '/', '-', '\\'}; // Array of spinner characters
+    int numFrames = sizeof(spinner) / sizeof(spinner[0]); // Number of frames
+
+    cout << "\n\n\n\n\n\n\t\t\t\t\t\t\t "<<a<<"...";
+
+    int frameIndex = 0;
+    int startTime = GetTickCount(); // Get current system time in milliseconds
+
+    while (true) {
+        int currentTime = GetTickCount();
+        if (currentTime - startTime >= 1000) // Stop after 1 seconds (1000 milliseconds)
+            break;
+
+        if (currentTime - startTime < 1800) { // While loading message is displayed
+            cout << "\r\t\t\t\t\t\t\t" << spinner[frameIndex++] << " Loading..." << flush;
+            if (frameIndex == numFrames)
+                frameIndex = 0;
+        } else { // After loading message is complete, display static character
+            cout << "\r\t\t\t\t\t\t\t" << spinner[frameIndex] << " Loading...  " << flush;
+        }
+
+        Sleep(100); // Adjust animation speed here
+    }
+    system("cls");
+
+}
 
 struct date_time 
 {
     int day, month, year, hour, minute; 
 };
+
+ostream& operator<<(ostream& os, const date_time& dt) 
+{
+    os << dt.day << "/" << dt.month << "/" << dt.year << " " << dt.hour << ":" << dt.minute;
+    return os;
+}
 
 void setdatetime(date_time &dt) 
 { 
@@ -41,6 +93,7 @@ class Flight
         cin >> airline_name;
         cout << "Enter the name of the aircraft: ";
         cin >> aircraft_name;
+        buffer();
         cout << "Enter the airport of departure: ";
         cin >> dept_airport;
         cout << "Enter the airport of arrival: ";
@@ -103,8 +156,32 @@ class Flight
         }
         return price;
     }
+    
+    void setAirlineName(string an)
+    {
+    	airline_name=an;
+	}
+	void setDeparture(date_time d)
+	{
+		departure=d;
+	}
+	void setArrival(date_time a)
+	{
+		arrival=a;
+	}
+	void setCapacity(int c)
+	{
+		capacity=c;
+	}
+	void setAvailableSeats(int as)
+	{
+		available_seats=as;
+	}
+	void setPrice(int p)
+	{
+		price=p;
+	}
 
-    // Getter functions to access flight details
     string getAirlineName() const {
         return airline_name;
     }
@@ -129,30 +206,35 @@ class Flight
     }
 };
 
-const int MAX_FLIGHTS = 100; // Maximum number of flights the system can handle
+const int MAX_FLIGHTS = 100; 
 
 class User
 {
 	protected:
 		string username;
 		string password;
+		string full_name;
 	public:
+		bool cont;
 		User()
 		{
-			username="",password="";
+			username="",password="",full_name="";
+			cont=false;
 		}
-		User(string u, string p)
+		User(string u, string p,string fn)
 		{
 			username=u;
 			password=p;
-		}
-		bool cont=false;       
+			full_name=fn;
+		}       
         void registration()
 		{
         	cout<<"Enter your username: ";
         	getline(cin,username);
         	cout<<"Enter your password: ";
         	getline(cin,password);
+        	cout<<"Enter your full name: ";
+        	getline(cin,full_name);
 		}
 	    bool login() 
 		{
@@ -167,8 +249,11 @@ class User
             if (username == u && password == p) 
 			{
                 loggedIn = true;
+                Sleep(500);
+                system("cls");
                 cout << "Welcome!!!" << endl;
-            } else 
+            } 
+			else 
 			{
                 cout << "Invalid username or password. Please try again." << endl;
             }
@@ -176,52 +261,61 @@ class User
 		while (!loggedIn);
 
         return loggedIn;
-    }	
+        
+    }
 };
-class Admin : public User 
+class Admin : public User ,public Flight
 {
   private:
     int adminID;
-    Flight flights[MAX_FLIGHTS]; // Array to store flights
-    int numFlights; // Number of flights currently in the system
-
+    
   public:
-    // Constructor with predefined Admin ID
-    Admin(string uname, string pwd): adminID(1001), User(uname,pwd), numFlights(0) {}
+  	int numFlights; 
+  	Flight flights[MAX_FLIGHTS]; 
+  	
+    Admin(string uname, string pwd, string fn): adminID(1001), User(uname,pwd,fn), numFlights(0) {}
 
-    // Method to create a new flight in the system
-    void createFlight() 
-	{
-        // Check if there's space for a new flight
-        if (numFlights >= MAX_FLIGHTS) 
-		{
-            cout << "Cannot create a new flight. Maximum capacity reached." << endl;
-            return;
-        }
-        
-        else
-        {
-        Flight newFlight; // Create a new Flight object
+// Inside the Admin class
 
-        // Prompt the administrator to set details for the new flight
-        cout << "Enter details for the new flight:\n";
-        newFlight.set_flight();
-
-        // Add the new flight to the system
-        flights[numFlights] = newFlight;
-        numFlights++;
-
-        cout << "Flight created successfully." << endl;
-        }
+void createFlight() {
+    if (numFlights >= MAX_FLIGHTS) {
+        cout << "Cannot create a new flight. Maximum capacity reached." << endl;
+        return;
     }
 
-    // Method to cancel an existing flight
+    Flight newFlight; // Create a new Flight object
+
+    // Prompt the administrator to set details for the new flight
+    cout << "Enter details for the new flight:\n";
+    newFlight.set_flight();
+
+    // Add the new flight to the system
+    flights[numFlights] = newFlight;
+    numFlights++;
+    cout << "Flight created successfully." << endl;
+
+    // Write flight details to a file
+    ofstream outFile("flights.txt", ios::app); // Open the file in append mode
+    if (!outFile.is_open()) {
+        cout << "Error opening file for writing." << endl;
+        return;
+    }
+
+    outFile << newFlight.getAirlineName() << "," << newFlight.getDeparture().day << "/" << newFlight.getDeparture().month << "/" << newFlight.getDeparture().year << " " << newFlight.getDeparture().hour << ":" << newFlight.getDeparture().minute << ",";
+    outFile << newFlight.getArrival().day << "/" << newFlight.getArrival().month << "/" << newFlight.getArrival().year << " " << newFlight.getArrival().hour << ":" << newFlight.getArrival().minute << ",";
+    outFile << newFlight.getCapacity() << ",";
+    outFile << newFlight.getAvailableSeats() << ",";
+    outFile << newFlight.getPrice() << endl;
+
+    outFile.close(); // Close the file
+}
+
+
     void cancelFlight(Flight flightToCancel) 
 	{
         bool found = false;
         for (int i = 0; i < numFlights; ++i) 
 		{
-            // Compare the details of the flight to cancel with each flight in the system
             if (flights[i].getAirlineName() == flightToCancel.getAirlineName() &&
                 flights[i].getDeparture().day == flightToCancel.getDeparture().day &&
                 flights[i].getDeparture().month == flightToCancel.getDeparture().month &&
@@ -253,7 +347,7 @@ class Admin : public User
             cout << "Flight not found. Unable to cancel." << endl;
         }
     }
-    // Method to display a list of all flights in the system
+    
 void viewAllFlights() 
 {
     if (numFlights == 0) 
@@ -277,44 +371,101 @@ void viewAllFlights()
     }
 }
 
+// Inside the Admin class
+
+void loadFlightsFromFile() {
+    ifstream inFile("flights.txt"); // Open the file for reading
+    if (!inFile.is_open()) {
+        cout << "Error opening file for reading." << endl;
+        return;
+    }
+
+    // Temporary variables to store flight details while reading from the file
+    string airlineName, deptDateTime, arrivalDateTime;
+    int capacity, availableSeats;
+    double price;
+    string line;
+
+    while (getline(inFile, line)) {
+        stringstream ss(line);
+        // Read flight details from each line
+        getline(ss, airlineName, ',');
+        getline(ss, deptDateTime, ',');
+        getline(ss, arrivalDateTime, ',');
+        ss >> capacity;
+        ss.ignore(); // Ignore the comma
+        ss >> availableSeats;
+        ss.ignore(); // Ignore the comma
+        ss >> price;
+
+        // Convert date and time strings to date_time objects
+        date_time departure, arrival;
+        stringstream deptStream(deptDateTime);
+        stringstream arrivalStream(arrivalDateTime);
+        deptStream >> departure.day >> departure.month >> departure.year >> departure.hour >> departure.minute;
+        arrivalStream >> arrival.day >> arrival.month >> arrival.year >> arrival.hour >> arrival.minute;
+
+        // Create a Flight object and add it to the flights array
+        Flight flight;
+        flight.setAirlineName(airlineName);
+        flight.setDeparture(departure);
+        flight.setArrival(arrival);
+        flight.setCapacity(capacity);
+        flight.setAvailableSeats(availableSeats);
+        flight.setPrice(price);
+
+        flights[numFlights++] = flight; // Add flight to the array
+    }
+
+    inFile.close(); // Close the file
+}
+
 };
 
-class regularUser: User
+class Passenger:public User
 {
-	private:
-		
 	public: 
+	    Passenger(string uname, string pwd,string fn): User(uname,pwd,fn) {}
 };
-
-
 int main() 
-{
+{	
 	int choice1;
-	string admin_username = "hashim"; // Username constant
-    string admin_password = "1234"; // Password constant
-    string enteredUsername, enteredPassword;
+    Admin admin("admin1","1234","Admin");
+    Passenger p1("ahmad7","password1","Ahmad");
+    Passenger p2("nabeel25","password2","Nabeel");
+    Passenger p3("murtaza8","password3","Murtaza");
+    
+    admin.loadFlightsFromFile();
+
+    cout<<"\t\t\tWelcome To Airline Reservation\n";
+    cout<<"\t***********************************************************\n\n";
     cout.width(30);
 	cout<<"1. Admin";
 	cout.width(30);
 	cout<<"2.User\n\n";
-	cout<<"Choose an option\n\t\t\t";
+	cout.width(30);
+	cout<<"Choose an option: ";
 	cin>>choice1;
+	
+	//clear the input buffer
+	cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');   
+	
+	screen(0.5,"Welcome");
 	
 	switch(choice1)
 	{
     
     case 1:	
-        cout << "Enter Username:\n\t\t\t ";
-        cin >> enteredUsername;
-        cout << "Enter Password:\n\t\t\t ";
-        cin >> enteredPassword;
+        cout<<"\t\t\t\tWelcome Admin\n\n";
+        admin.login();
+        Sleep(1000);
+        system("cls");
+        admin.viewAllFlights();
         break;
     
     case 2:
+    	cout<<"\t\t\t\tWho wants to login\n\n";
     	break;
-
-		case 3:
-		break;
     	
     default:
     	break;
