@@ -9,7 +9,6 @@
 
 using namespace std;
 
-
 void buffer()
 {
 		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');  
@@ -105,7 +104,6 @@ class Flight
         cin >> price;
         available_seats = capacity;
     }
-
     void isSeatAvailable() 
 	{
         if (available_seats > 0) 
@@ -116,7 +114,6 @@ class Flight
             cout << "Sorry! The aircraft is full.\n";
         }
     }
-
     void reserveSeat() 
 	{
         int numSeats;
@@ -131,11 +128,10 @@ class Flight
             cout << "Your seats have been reserved\n";
         }
     }
-
     double calculatePrice() 
 	{
         string passengerType;
-        cout << "Enter the type of passenger: ";
+        cout << "\n\nEnter the type of passenger: ";
         cin >> passengerType;
 
         if (passengerType == "adult" || passengerType == "Adult") 
@@ -153,7 +149,6 @@ class Flight
         }
         return price;
     }
-
     void setAirlineName(string an)
     {
     	airline_name=an;
@@ -182,22 +177,18 @@ class Flight
     string getAirlineName() const {
         return airline_name;
     }
-
     date_time getDeparture() const {
         return departure;
     }
-
     date_time getArrival() const {
         return arrival;
     }
     int getCapacity() const {
         return capacity;
     }
-
     int getAvailableSeats() const {
         return available_seats;
     }
-
     double getPrice() const {
         return price;
     }
@@ -272,17 +263,15 @@ class Admin : public User ,public Flight
 
     Admin(string uname, string pwd, string fn): adminID(1001), User(uname,pwd,fn), numFlights(0) {}
 
-// Inside the Admin class
-
-void createFlight() {
-    if (numFlights >= MAX_FLIGHTS) {
+void createFlight() 
+{
+    if (numFlights >= MAX_FLIGHTS) 
+	{
         cout << "Cannot create a new flight. Maximum capacity reached." << endl;
         return;
     }
 
-    Flight newFlight; // Create a new Flight object
-
-    // Prompt the administrator to set details for the new flight
+    Flight newFlight; 
     cout << "Enter details for the new flight:\n";
     newFlight.set_flight();
 
@@ -293,7 +282,8 @@ void createFlight() {
 
     // Write flight details to a file
     ofstream outFile("flights.txt", ios::app); // Open the file in append mode
-    if (!outFile.is_open()) {
+    if (!outFile.is_open()) 
+	{
         cout << "Error opening file for writing." << endl;
         return;
     }
@@ -304,7 +294,7 @@ void createFlight() {
     outFile << newFlight.getAvailableSeats() << ",";
     outFile << newFlight.getPrice() << endl;
 
-    outFile.close(); // Close the file
+    outFile.close(); 
 }
 
     void cancelFlight(Flight flightToCancel) 
@@ -329,7 +319,7 @@ void createFlight() {
                 }
                 numFlights--; // Decrement the number of flights
                 found = true;
-                break; // No need to continue searching
+                break; 
             }
         }
  if (found) {
@@ -337,12 +327,14 @@ void createFlight() {
 
         // Write updated flight details to the file
         ofstream outFile("flights.txt");
-        if (!outFile.is_open()) {
+        if (!outFile.is_open()) 
+		{
             cout << "Error opening file for writing." << endl;
             return;
         }
         // Rewrite all flights except the canceled one to the file
-        for (int i = 0; i < numFlights; ++i) {
+        for (int i = 0; i < numFlights; ++i) 
+		{
             outFile << flights[i].getAirlineName() << "," << flights[i].getDeparture().day << "," << flights[i].getDeparture().month << " ," << flights[i].getDeparture().hour << "," << flights[i].getDeparture().minute << ",";
             outFile << flights[i].getArrival().day << "," << flights[i].getArrival().month << " ," << flights[i].getArrival().hour << "," << flights[i].getArrival().minute << ",";
             outFile << flights[i].getCapacity() << ",";
@@ -382,11 +374,11 @@ void viewAllFlights()
     }
 }
 
-// Inside the Admin class
 
 void loadFlightsFromFile() {
-    ifstream inFile("flights.txt"); // Open the file for reading
-    if (!inFile.is_open()) {
+    ifstream inFile("flights.txt"); 
+    if (!inFile.is_open()) 
+	{
         cout << "Error opening file for reading." << endl;
         return;
     }
@@ -403,7 +395,7 @@ void loadFlightsFromFile() {
         // Read flight details from each line
         getline(ss, airlineName, ',');
         ss >> departure.day;
-        ss.ignore(); // Ignore the comma
+        ss.ignore(); 
         ss >> departure.month;
         ss.ignore();
         ss >> departure.hour;
@@ -419,9 +411,9 @@ void loadFlightsFromFile() {
         ss >> arrival.minute;
         ss.ignore();
         ss >> capacity;
-        ss.ignore(); // Ignore the comma
+        ss.ignore();
         ss >> availableSeats;
-        ss.ignore(); // Ignore the comma
+        ss.ignore(); 
         ss >> price;
 
         // Create a Flight object and add it to the flights array
@@ -436,7 +428,7 @@ void loadFlightsFromFile() {
         flights[numFlights++] = flight; // Add flight to the array
     }
 
-    inFile.close(); // Close the file
+    inFile.close(); 
 }
 
 };
@@ -455,7 +447,7 @@ int main()
     Passenger p3("murtaza8", "password3", "Murtaza");
 
     admin.loadFlightsFromFile();
-
+    t:
     cout << "\t\t\tWelcome To Airline Reservation\n";
     cout << "\t***********************************************************\n\n";
     cout.width(30);
@@ -466,16 +458,15 @@ int main()
     cout << "Choose an option: ";
     cin >> choice1;
 
-    // Clear the input buffer
-    cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');   
+    buffer(); 
     screen(0.5, "Welcome");
 
     if (choice1 == 1) {
         // Admin options
         cout << "\t\t\t\tWelcome Admin\n\n";
         if (admin.login()) {
-            int adminChoice;
-            do {
+        	    c:
+                int adminChoice;
                 cout << "Admin Menu:\n";
                 cout << "1. Create a new flight\n";
                 cout << "2. Cancel a flight\n";
@@ -483,11 +474,12 @@ int main()
                 cout << "4. Logout\n";
                 cout << "Choose an option: ";
                 cin >> adminChoice;
-                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the buffer
-
+                buffer();
+                screen(0.5,"Loading");
                 switch (adminChoice) {
                     case 1:
                         admin.createFlight();
+                        screen(3,"Loading");
                         break;
                     case 2:
                     {
@@ -498,22 +490,27 @@ int main()
                         cin>>cancel_choice;
                         cancel=admin.flights[cancel_choice-1];
                         admin.cancelFlight(cancel);
+                        screen(3,"Loading");
                         break;
                     }
                     case 3:
                         admin.viewAllFlights();
+                        screen(5,"Loading");
+                        goto c;
                         break;
                     case 4:
                         cout << "Logging out...\n";
+                        Sleep(1000);
+                        system("cls");
+                        goto t;
                         break;
                     default:
                         cout << "Invalid option. Please try again.\n";
                         break;
                 }
-            } while (adminChoice != 4);
         }
-    } else if (choice1 == 2) {
-        // User (Passenger) options
+    } else if (choice1 == 2) 
+	{
         cout << "\t\t\t\tWho wants to login?\n";
         cout << "1. Ahmad\n";
         cout << "2. Nabeel\n";
@@ -521,9 +518,9 @@ int main()
         cout << "Choose an option: ";
         int userChoice;
         cin >> userChoice;
-        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the buffer
-
-        Passenger* passenger;
+        buffer();
+        screen(0.5,"Loading");
+        Passenger * passenger;
 
         switch (userChoice) {
             case 1:
@@ -539,11 +536,10 @@ int main()
                 cout << "Invalid option. Please try again.\n";
                 break;
         }
-
         if (passenger) {
             if (passenger->login()) {
+            	d:
                 int passengerChoice;
-                do {
                     cout << "Passenger Menu:\n";
                     cout << "1. View all flights\n";
                     cout << "2. Reserve a seat on a flight\n";
@@ -552,42 +548,53 @@ int main()
                     cout << "Choose an option: ";
                     cin >> passengerChoice;
                     buffer();
+                    
+                    screen(0.5,"Loading");
 
                     switch (passengerChoice) {
                         case 1:
                             admin.viewAllFlights();
+                            screen(5,"Loading");
+                            goto d;
                             break;
                         case 2:
                         {
-                            // Scope the chosenFlight variable to this case block
-                            Flight chosenFlight;
-                            cout << "Enter flight details to reserve a seat: \n";
-                            chosenFlight.set_flight();
-                            chosenFlight.reserveSeat();
+                            int reserve_choice;
+                            admin.viewAllFlights();
+                            cout<<"\n\nEnter the flight to reserve in: ";
+                            cin>>reserve_choice;
+                            admin.flights[reserve_choice-1].reserveSeat();
+                            screen(3,"Loading");
+                            goto d;
                             break;
                         }
                         case 3:
                         {
-                            // Scope the flightForPrice variable to this case block
-                            Flight flightForPrice;
-                            cout << "Enter flight details to calculate price: \n";
-                            flightForPrice.set_flight();
-                            cout << "Calculated Price: " << flightForPrice.calculatePrice() << "\n";
+                            int price_choice;
+                            admin.viewAllFlights();
+                            cout<<"\n\nEnter the flight to check price in: ";
+                            cin>>price_choice;
+                            double price=admin.flights[price_choice-1].calculatePrice();
+                            cout<<"Now the price is: "<<price<<" PKR"<<endl;
+                            screen(4,"Loading");
                             break;
                         }
                         case 4:
                             cout << "Logging out...\n";
+                            Sleep(1000);
+                            system("cls");
+                            goto t;
                             break;
                         default:
                             cout << "Invalid option. Please try again.\n";
                             break;
                     }
-                } while (passengerChoice != 4);
             }
         }
-    } else {
+    } 
+	else
+	{
         cout << "Invalid option. Exiting the program.\n";
     }
-
     return 0;
 }
