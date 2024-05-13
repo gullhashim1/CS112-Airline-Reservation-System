@@ -76,6 +76,8 @@ void setdatetime(date_time &dt)
     cin >> dt.minute;
 }
 
+namespace classes
+{
 class Flight 
 {
   protected:
@@ -438,6 +440,8 @@ class Passenger:public User
 	public: 
 	    Passenger(string uname, string pwd,string fn): User(uname,pwd,fn) {}
 };
+}
+using namespace classes;
 int main() 
 {   
     int choice1;
